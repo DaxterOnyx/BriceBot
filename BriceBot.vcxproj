@@ -139,32 +139,35 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Documents\GAMES\BriceBot\BriceBot.cpp" />
-    <ClCompile Include="..\..\..\Documents\GAMES\BriceBot\hlt\command.cpp" />
-    <ClCompile Include="..\..\..\Documents\GAMES\BriceBot\hlt\constants.cpp" />
-    <ClCompile Include="..\..\..\Documents\GAMES\BriceBot\hlt\dropoff.cpp" />
-    <ClCompile Include="..\..\..\Documents\GAMES\BriceBot\hlt\game.cpp" />
-    <ClCompile Include="..\..\..\Documents\GAMES\BriceBot\hlt\game_map.cpp" />
-    <ClCompile Include="..\..\..\Documents\GAMES\BriceBot\hlt\log.cpp" />
-    <ClCompile Include="..\..\..\Documents\GAMES\BriceBot\hlt\player.cpp" />
-    <ClCompile Include="..\..\..\Documents\GAMES\BriceBot\hlt\ship.cpp" />
+    <ClCompile Include="hlt\command.cpp" />
+    <ClCompile Include="hlt\constants.cpp" />
+    <ClCompile Include="hlt\dropoff.cpp" />
+    <ClCompile Include="hlt\game.cpp" />
+    <ClCompile Include="hlt\game_map.cpp" />
+    <ClCompile Include="hlt\log.cpp" />
+    <ClCompile Include="hlt\player.cpp" />
+    <ClCompile Include="hlt\ship.cpp" />
+    <ClCompile Include="src\BriceBot.cpp" />
+    <ClCompile Include="src\MyShip.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\command.hpp" />
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\constants.hpp" />
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\direction.hpp" />
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\dropoff.hpp" />
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\entity.hpp" />
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\game.hpp" />
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\game_map.hpp" />
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\input.hpp" />
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\log.hpp" />
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\map_cell.hpp" />
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\player.hpp" />
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\position.hpp" />
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\ship.hpp" />
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\shipyard.hpp" />
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\types.hpp" />
+    <ClInclude Include="hlt\command.hpp" />
+    <ClInclude Include="hlt\constants.hpp" />
+    <ClInclude Include="hlt\direction.hpp" />
+    <ClInclude Include="hlt\dropoff.hpp" />
+    <ClInclude Include="hlt\entity.hpp" />
+    <ClInclude Include="hlt\game.hpp" />
+    <ClInclude Include="hlt\game_map.hpp" />
+    <ClInclude Include="hlt\input.hpp" />
+    <ClInclude Include="hlt\log.hpp" />
+    <ClInclude Include="hlt\map_cell.hpp" />
+    <ClInclude Include="hlt\player.hpp" />
+    <ClInclude Include="hlt\position.hpp" />
+    <ClInclude Include="hlt\ship.hpp" />
+    <ClInclude Include="hlt\shipyard.hpp" />
+    <ClInclude Include="hlt\types.hpp" />
+    <ClInclude Include="src\BriceBot.h" />
+    <ClInclude Include="src\MyShip.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

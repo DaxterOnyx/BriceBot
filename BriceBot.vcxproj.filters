@@ -15,78 +15,87 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Documents\GAMES\BriceBot\hlt\command.cpp">
+    <ClCompile Include="src\BriceBot.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Documents\GAMES\BriceBot\hlt\constants.cpp">
+    <ClCompile Include="src\MyShip.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Documents\GAMES\BriceBot\hlt\dropoff.cpp">
+    <ClCompile Include="hlt\dropoff.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Documents\GAMES\BriceBot\hlt\game.cpp">
+    <ClCompile Include="hlt\game.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Documents\GAMES\BriceBot\hlt\game_map.cpp">
+    <ClCompile Include="hlt\game_map.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Documents\GAMES\BriceBot\hlt\log.cpp">
+    <ClCompile Include="hlt\log.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Documents\GAMES\BriceBot\hlt\player.cpp">
+    <ClCompile Include="hlt\player.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Documents\GAMES\BriceBot\hlt\ship.cpp">
+    <ClCompile Include="hlt\ship.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Documents\GAMES\BriceBot\BriceBot.cpp">
+    <ClCompile Include="hlt\command.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="hlt\constants.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\command.hpp">
+    <ClInclude Include="src\MyShip.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\constants.hpp">
+    <ClInclude Include="hlt\direction.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\direction.hpp">
+    <ClInclude Include="hlt\dropoff.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\dropoff.hpp">
+    <ClInclude Include="hlt\entity.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\entity.hpp">
+    <ClInclude Include="hlt\game.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\game.hpp">
+    <ClInclude Include="hlt\game_map.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\game_map.hpp">
+    <ClInclude Include="hlt\input.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\input.hpp">
+    <ClInclude Include="hlt\log.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\log.hpp">
+    <ClInclude Include="hlt\map_cell.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\map_cell.hpp">
+    <ClInclude Include="hlt\player.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\player.hpp">
+    <ClInclude Include="hlt\position.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\position.hpp">
+    <ClInclude Include="hlt\ship.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\ship.hpp">
+    <ClInclude Include="hlt\shipyard.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\shipyard.hpp">
+    <ClInclude Include="hlt\types.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Documents\GAMES\BriceBot\hlt\types.hpp">
+    <ClInclude Include="hlt\command.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="hlt\constants.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BriceBot.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
