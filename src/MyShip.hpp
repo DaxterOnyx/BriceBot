@@ -2,18 +2,22 @@
 
 #include "../hlt/direction.hpp"
 #include "../hlt/position.hpp"
+#include "../hlt/game.hpp"
 
 namespace BriceBot
 {
 	class MyShip
 	{
+		int m_id;
 		hlt::Position m_destination;
-
+		hlt::Game* m_game;
 	public:
 		MyShip();
-		hlt::Direction Move(hlt::Position p_position,int p_halite, int p_mapHalite);
+		MyShip(hlt::Game* p_game, int p_id);
+		hlt::Direction Move();
 	private:
-		void DefineDestination();
+		hlt::Position NewDestination(hlt::Position p_position);
+		hlt::Position GoBase(hlt::Position p_position);
 	};
 }
 

@@ -7,11 +7,13 @@
 #include <ctime>
 #include <chrono>
 #include <map>
+#define RAND_MAX 1024
 
 using namespace std;
 using namespace hlt;
 
 int main(int argc, char* argv[]) {
+	Game game;
 	unsigned int rng_seed;
 	if (argc > 1) {
 		rng_seed = static_cast<unsigned int>(stoul(argv[1]));
@@ -19,9 +21,9 @@ int main(int argc, char* argv[]) {
 	else {
 		rng_seed = static_cast<unsigned int>(time(nullptr));
 	}
-	mt19937 rng(rng_seed);
+	rng_seed *= game.my_id;
+	srand(rng_seed);
 
-	Game game;
 
 	map<int, BriceBot::MyShip> ships;
 
@@ -31,37 +33,48 @@ int main(int argc, char* argv[]) {
 	game.ready("BriceMyCppBot");
 
 	log::log("Successfully created bot! My Player ID is " + to_string(game.my_id) + ". Bot rng seed is " + to_string(rng_seed) + ".");
-
+	bool spawn = true;
 	for (;;) {
+
 		game.update_frame();
 		shared_ptr<Player> me = game.me;
 		unique_ptr<GameMap>& game_map = game.game_map;
 
 		vector<Command> command_queue;
 
-		if (me->halite >= constants::SHIP_COST &&
-			!game_map->at(me->shipyard)->is_occupied())
-		{
-			command_queue.push_back(me->shipyard->spawn());
-		}
-
 		for (const auto& ship_iterator : me->ships) {
+			//GET Ship destination
 			shared_ptr<Ship> ship = ship_iterator.second;
+			if (ships.count(ship->id) == 0)
+			{
+				//Create MyShip
+				BriceBot::MyShip new_ship(&game, ship->id);
+				ships.insert(std::pair<int, BriceBot::MyShip>(ship->id, new_ship));
+				log::log("test");
+			}
 			BriceBot::MyShip l_ship = ships[ship->id];
+
+			//Calculate move
 			int l_cellHalite = game_map->at(ship)->halite;
 
-			//if ((l_cellHalite / 10 < ship->halite && l_cellHalite <= constants::MAX_HALITE) || ship->is_full())
+			hlt::Direction direction = l_ship.Move();
+			if (direction == hlt::Direction::STILL)
 			{
-				hlt::Direction direction = l_ship.Move(ship->position, ship->halite, l_cellHalite);
-				if (direction == hlt::Direction::STILL)
-				{
-					command_queue.push_back(ship->stay_still());
-				}
-				else 
-				{
-					command_queue.push_back(ship->move(direction));
-				}
+				command_queue.push_back(ship->stay_still());
 			}
+			else
+			{
+				command_queue.push_back(ship->move(direction));
+			}
+		}
+
+
+		if (me->halite >= constants::SHIP_COST &&
+			!game_map->at(me->shipyard)->is_occupied() &&
+			spawn)
+		{
+			spawn = false;
+			command_queue.push_back(me->shipyard->spawn());
 		}
 
 		if (!game.end_turn(command_queue)) {
