@@ -16,8 +16,9 @@ namespace BriceBot
 		MyShip(hlt::Game* p_game, int p_id);
 		hlt::Direction Move();
 	private:
-		hlt::Position NewDestination(hlt::Position p_position);
-		hlt::Position GoBase(hlt::Position p_position);
+		void NewDestination(hlt::Position p_position, hlt::Position & p_destination);
+		void GoBase(hlt::Position p_position, hlt::Position & p_destination);
+		hlt::Direction Navigate(hlt::Position p_position, hlt::Position p_destination);
 	};
 }
 

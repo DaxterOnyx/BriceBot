@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
 	else {
 		rng_seed = static_cast<unsigned int>(time(nullptr));
 	}
-	rng_seed *= game.my_id;
+	rng_seed *= game.my_id + 1;
 	srand(rng_seed);
 
 
@@ -42,6 +42,7 @@ int main(int argc, char* argv[]) {
 
 		vector<Command> command_queue;
 
+		log::log("NB de ship" + std::to_string(me->ships.size()));
 		for (const auto& ship_iterator : me->ships) {
 			//GET Ship destination
 			shared_ptr<Ship> ship = ship_iterator.second;
@@ -50,13 +51,11 @@ int main(int argc, char* argv[]) {
 				//Create MyShip
 				BriceBot::MyShip new_ship(&game, ship->id);
 				ships.insert(std::pair<int, BriceBot::MyShip>(ship->id, new_ship));
-				log::log("test");
+				log::log("CCEFDFDFDFDFDFDFDFDFDF");
 			}
 			BriceBot::MyShip l_ship = ships[ship->id];
 
 			//Calculate move
-			int l_cellHalite = game_map->at(ship)->halite;
-
 			hlt::Direction direction = l_ship.Move();
 			if (direction == hlt::Direction::STILL)
 			{
@@ -75,6 +74,7 @@ int main(int argc, char* argv[]) {
 		{
 			spawn = false;
 			command_queue.push_back(me->shipyard->spawn());
+			log::log("Spawn new ship");
 		}
 
 		if (!game.end_turn(command_queue)) {

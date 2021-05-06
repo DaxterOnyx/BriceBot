@@ -10,39 +10,60 @@ namespace BriceBot
 	{
 		m_id = p_id;
 		m_game = p_game;
-		m_destination = NewDestination(m_game->me->shipyard->position);
+		hlt::log::log("PGIGKJKJHL");
+		m_destination = hlt::Position(p_game->me->ships[p_id]->position);
 	}
 
 	hlt::Direction MyShip::Move()
 	{
+		auto l_log = "Ship" + std::to_string(m_id);
 		auto l_ship = m_game->me->ships[m_id];
 		auto l_pos = l_ship->position;
 		auto l_halite = l_ship->halite;
-		if (l_pos.x == m_destination.x && l_pos.y == m_destination.y)
+		if (l_pos == m_destination)
 		{
-			//hlt::log::log("Ship ID " + std::to_string(m_id) + " Pos x=" + std::to_string(l_pos.x) + " y=" + std::to_string(l_pos.y) + " dist=" + std::to_string(m_game->game_map->calculate_distance(l_pos, m_destination)));
-			hlt::log::log(" Pos x=" + std::to_string(m_destination.x) + " y=" + std::to_string(m_destination.y));
+			//TODO m_dest is not modify !!!!!!!!!!!!!!!!!!!
 			//Define destination
-			if (l_halite > 0)
+			if (l_halite > 100)
 			{
 				if (m_game->game_map->at(l_pos)->halite <= 100)
-					m_destination = GoBase(l_pos);
+				{
+					GoBase(l_pos, m_destination);
+					l_log += " go base";
+				}
 			}
 			else
 			{
-				m_destination = NewDestination(l_pos);
+				NewDestination(l_pos, m_destination);
+				l_log += " new dest: x= " + std::to_string(m_destination.x) + " y=" + std::to_string(m_destination.y);
 			}
-			hlt::log::log(" Pos x=" + std::to_string(m_destination.x) + " y=" + std::to_string(m_destination.y));
 		}
-		return m_game->game_map->naive_navigate(m_game->me->ships[m_id], m_destination);
+
+		hlt::Direction l_dir;
+		/*
+		l_dir = m_game->game_map->naive_navigate(m_game->me->ships[m_id], m_destination);
+		//*/
+		//*
+		l_dir = Navigate(l_pos, m_destination);
+		//*/
+		hlt::log::log(l_log + " go to " + (char)l_dir + " with " + std::to_string(l_halite));
+		return l_dir;
 	}
 
-	hlt::Position MyShip::NewDestination(hlt::Position p_position)
+	void MyShip::NewDestination(hlt::Position p_position, hlt::Position& p_destination)
 	{
-		hlt::Position l_destination;
+
 		//GLOBAL RANDOM
 		//*
-		l_destination = hlt::Position(rand() % 64, rand() % 64);
+		m_destination.x = rand() % m_game->game_map->width;
+		m_destination.y = rand() % m_game->game_map->height;
+
+		//*/
+
+		//NEXT RANDOM BIS
+		/*
+		hlt::Position l_pos = m_game->me->ships[m_id]->position;
+		l_destination = hlt::Position{l_pos.x + (rand() % 3) - 1, l_pos.y + (rand() % 3) - 1};
 		//*/
 
 		//Next RANDOM
@@ -63,7 +84,7 @@ namespace BriceBot
 			mov = hlt::Position(0, -1);
 			break;
 		}
-		l_destination = hlt::Position(p_position.x + mov.x, p_position.y + mov.y);
+		l_destination = hlt::Position{p_position.x + mov.x, p_position.y + mov.y};
 		//*/
 
 		//Next with more halite
@@ -103,18 +124,15 @@ namespace BriceBot
 		{
 			l_destination = l_southPos;
 		}
-		l_destination = hlt::Position(p_position.x + l_move.x, p_position.y + l_move.y);
+		l_destination = hlt::Position{p_position.x + l_move.x, p_position.y + l_move.y};
 		//*/
-
-		hlt::log::log("Ship ID " + std::to_string(m_id) + " x=" + std::to_string(l_destination.x) + " y=" + std::to_string(l_destination.y));
-		return l_destination;
 	}
 
-	hlt::Position MyShip::GoBase(hlt::Position p_position)
+	void MyShip::GoBase(hlt::Position p_position, hlt::Position& p_destination)
 	{
-		auto l_destination = hlt::Position(m_game->me->shipyard->position);
-		int l_dist = m_game->game_map->calculate_distance(p_position, l_destination);
-		hlt::log::log("Ship ID " + std::to_string(m_id) + " x=" + std::to_string(l_destination.x) + " y=" + std::to_string(l_destination.y) + " dist=" + std::to_string(m_game->game_map->calculate_distance(p_position, l_destination)));
+		p_destination = hlt::Position(m_game->me->shipyard->position);
+		int l_dist = m_game->game_map->calculate_distance(p_position, p_destination);
+		hlt::log::log("Ship ID " + std::to_string(m_id) + " x=" + std::to_string(p_destination.x) + " y=" + std::to_string(p_destination.y) + " dist=" + std::to_string(m_game->game_map->calculate_distance(p_position, p_destination)));
 
 		for (const auto& l_dropoffs_iterator : m_game->me->dropoffs)
 		{
@@ -123,11 +141,81 @@ namespace BriceBot
 			hlt::log::log(std::to_string(l_tempDist) + "<" + std::to_string(l_dist));
 			if (l_tempDist < l_dist)
 			{
-				l_destination = hlt::Position(l_dropPos);
+				p_destination = hlt::Position(l_dropPos);
 				l_dist = l_tempDist;
 			}
 		}
+	}
 
-		return l_destination;
+	hlt::Direction MyShip::Navigate(hlt::Position p_pos, hlt::Position p_dest)
+	{
+		auto l_direction = hlt::Direction::STILL;
+		auto l_map = m_game->game_map.get();
+		if (p_pos == p_dest)
+			return l_direction;
+
+		auto l_cell = l_map->at(p_pos);
+		int l_cost = l_cell->halite * 1 / hlt::constants::MOVE_COST_RATIO;
+		auto l_ship = m_game->me->ships[m_id];
+
+		if (l_cell->has_structure() || l_cost <= l_ship->halite)
+		{
+			//MOVE
+			//CALCULATE DIRECTION OF DESTINATION
+			auto l_width = l_map->width;
+			auto l_distE = (p_pos.x - p_dest.x) + l_width;
+			auto l_distW = (p_dest.x - p_pos.x) + l_width;
+			auto l_dirH = l_direction;
+			auto l_cellH = l_cell;
+			if (l_distW < l_distE)
+			{
+				l_dirH = hlt::Direction::WEST;
+			}
+			else if (l_distW > l_distE)
+			{
+				l_dirH = hlt::Direction::EAST;
+			}
+			l_cellH = l_map->at(p_pos.directional_offset(l_dirH));
+
+			auto l_height = l_map->height;
+			auto l_distN = (p_dest.y - p_pos.y) + l_height;
+			auto l_distS = (p_pos.y - p_dest.y) + l_height;
+			auto l_dirV = l_direction;
+			auto l_cellV = l_cell;
+			if (l_distN < l_distS)
+			{
+				l_dirV = hlt::Direction::NORTH;
+			}
+			else if (l_distN > l_distS)
+			{
+				l_dirV = hlt::Direction::SOUTH;
+			}
+			l_cellV = l_map->at(p_pos.directional_offset(l_dirV));
+
+			//DECIDE BETTER DIRECTION 
+			if (l_ship->halite < 100)
+
+			{
+				//I MUST RELOAD
+				//I GO TO THE BETTER CELL TO RELOAD
+				if (l_cellH->halite > l_cellV->halite && l_dirH != hlt::Direction::STILL || l_dirV == hlt::Direction::STILL)
+					l_direction = l_dirH;
+				else
+					l_direction = l_dirV;
+			}
+			else
+			{
+				//I CAN MOVE
+				//I GO TO THE LESSER CELL TO COST LESS
+				if (l_cellH->halite < l_cellV->halite && l_dirH != hlt::Direction::STILL || l_dirV == hlt::Direction::STILL)
+					l_direction = l_dirH;
+				else
+					l_direction = l_dirV;
+			}
+
+			hlt::log::log("navigate at " + std::to_string(p_pos.x) + ";" + std::to_string(p_pos.y) + " to " + std::to_string(p_dest.x) + ";" + std::to_string(p_dest.y) + " by " + (char)l_direction);
+			hlt::log::log("distN " + std::to_string(l_distN) + " distS " + std::to_string(l_distS) + " distE " + std::to_string(l_distE) + " distW " + std::to_string(l_distW));
+		}
+		return l_direction;
 	}
 }
