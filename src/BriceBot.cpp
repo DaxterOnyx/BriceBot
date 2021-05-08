@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
 	srand(rng_seed);
 
 
-	map<int, BriceBot::MyShip> ships;
+	map<int, BriceBot::MyShip*> ships;
 
 	// At this point "game" variable is populated with initial map data.
 	// This is a good place to do computationally expensive start-up pre-processing.
@@ -33,7 +33,6 @@ int main(int argc, char* argv[]) {
 	game.ready("BriceMyCppBot");
 
 	log::log("Successfully created bot! My Player ID is " + to_string(game.my_id) + ". Bot rng seed is " + to_string(rng_seed) + ".");
-	bool spawn = true;
 	for (;;) {
 
 		game.update_frame();
@@ -43,20 +42,19 @@ int main(int argc, char* argv[]) {
 		vector<Command> command_queue;
 
 		log::log("NB de ship" + std::to_string(me->ships.size()));
-		for (const auto& ship_iterator : me->ships) {
+		for (const auto &ship_iterator : me->ships) {
 			//GET Ship destination
 			shared_ptr<Ship> ship = ship_iterator.second;
 			if (ships.count(ship->id) == 0)
 			{
 				//Create MyShip
-				BriceBot::MyShip new_ship(&game, ship->id);
-				ships.insert(std::pair<int, BriceBot::MyShip>(ship->id, new_ship));
-				log::log("CCEFDFDFDFDFDFDFDFDFDF");
+				BriceBot::MyShip* new_ship = new BriceBot::MyShip(&game, ship->id);
+				ships.insert(std::pair<int, BriceBot::MyShip*>(ship->id, new_ship));
 			}
-			BriceBot::MyShip l_ship = ships[ship->id];
+			BriceBot::MyShip* l_ship = ships[ship->id];
 
 			//Calculate move
-			hlt::Direction direction = l_ship.Move();
+			hlt::Direction direction = l_ship->Move();
 			if (direction == hlt::Direction::STILL)
 			{
 				command_queue.push_back(ship->stay_still());
@@ -69,10 +67,8 @@ int main(int argc, char* argv[]) {
 
 
 		if (me->halite >= constants::SHIP_COST &&
-			!game_map->at(me->shipyard)->is_occupied() &&
-			spawn)
+			!game_map->at(me->shipyard)->is_occupied())
 		{
-			spawn = false;
 			command_queue.push_back(me->shipyard->spawn());
 			log::log("Spawn new ship");
 		}
