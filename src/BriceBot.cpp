@@ -41,6 +41,18 @@ int main(int argc, char* argv[]) {
 
 		vector<Command> command_queue;
 
+		//map used to chose the destination of the ships
+		vector<vector<float>> interest;
+		// vector used to know if a ship is already coming to a position
+		vector<Position> destinations;
+		
+		for (int i = 0; i < 64; i++) {
+			interest.push_back({});
+			for (int j = 0; j < 64; j++) {
+				interest.at(i).push_back(game_map->cells.at(i).at(j).halite);
+			}
+		}
+
 		log::log("NB de ship" + std::to_string(me->ships.size()));
 		for (const auto &ship_iterator : me->ships) {
 			//GET Ship destination
@@ -54,7 +66,7 @@ int main(int argc, char* argv[]) {
 			BriceBot::MyShip* l_ship = ships[ship->id];
 
 			//Calculate move
-			hlt::Direction direction = l_ship->Move();
+			hlt::Direction direction = l_ship->Move(interest, &destinations);
 			if (direction == hlt::Direction::STILL)
 			{
 				command_queue.push_back(ship->stay_still());
@@ -67,7 +79,7 @@ int main(int argc, char* argv[]) {
 
 
 		if (me->halite >= constants::SHIP_COST &&
-			!game_map->at(me->shipyard)->is_occupied())
+			!game_map->at(me->shipyard)->is_occupied() && me->ships.size() < 13 && game.turn_number < 300)
 		{
 			command_queue.push_back(me->shipyard->spawn());
 			log::log("Spawn new ship");

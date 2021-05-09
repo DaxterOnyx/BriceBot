@@ -13,13 +13,13 @@ namespace BriceBot
 		m_destination = hlt::Position(p_game->me->ships[p_id]->position);
 	}
 
-	hlt::Direction MyShip::Move()
+	hlt::Direction MyShip::Move(std::vector<std::vector<float>> interest, std::vector<hlt::Position>* destinations)
 	{
 		auto l_log = "Ship" + std::to_string(m_id);
 		auto l_ship = m_game->me->ships[m_id];
 		auto l_pos = l_ship->position;
 		auto l_halite = l_ship->halite;
-		if (l_pos == m_destination)
+		if (true)
 		{
 			//Define destination
 			if (l_halite > 0.1f * hlt::constants::MAX_HALITE)
@@ -32,7 +32,7 @@ namespace BriceBot
 			}
 			else
 			{
-				m_destination = NewDestination(l_pos);
+				m_destination = NewDestination(l_pos, interest, destinations);
 				l_log += " new dest: x= " + std::to_string(m_destination.x) + " y=" + std::to_string(m_destination.y);
 			}
 		}
@@ -43,6 +43,19 @@ namespace BriceBot
 		//*/
 		//*
 		l_dir = Navigate(l_pos, m_destination);
+		if (m_destination != l_pos && l_dir == hlt::Direction::STILL) {
+			hlt::Direction random_dir = MoveAny();
+			bool exist = false;
+			for (hlt::Position p : *destinations) {
+				if (p == l_pos.directional_offset(l_dir)) {
+					exist = true;
+				}
+			}
+			if (!exist) {
+				(*destinations).push_back(l_pos.directional_offset(l_dir));
+				l_dir = random_dir;
+			}
+		}
 		//*/
 		hlt::log::log(l_log + " go to " + (char)l_dir + " with " + std::to_string(l_halite));
 
@@ -51,68 +64,77 @@ namespace BriceBot
 		return l_dir;
 	}
 
-	hlt::Position MyShip::NewDestination(hlt::Position p_position)
+	hlt::Position MyShip::NewDestination(hlt::Position p_position, std::vector<std::vector<float>> interest, std::vector<hlt::Position>* destinations)
 	{
 		auto l_destination = p_position;
-		//GLOBAL RANDOM
-		/*
-		l_destination.x = rand() % m_game->game_map->width;
-		l_destination.y = rand() % m_game->game_map->height;
 
-		//*/
+		int destX, destY;
+		float tmp_interest, destInterest = 0;
+		int dist = 0, dist_base = 0;
+		//go through the map of interests (here just the halite)
+		//using the distance to the base (could use dropoff too is implemented) and from the ship to scale the interest of each case
+		//the most interesting case for the ship is the new destination
+		for (int i = 0; i < 64; i++) {
+			for (int j = 0; j < 64; j++) {
+				dist = std::abs(p_position.x - j) + std::abs(p_position.y - i);
+				dist_base = std::abs(m_game->me->shipyard->position.x - j) + std::abs(m_game->me->shipyard->position.y - i);
+				tmp_interest = std::powf(0.95f, dist) * interest.at(i).at(j) * std::powf(0.98f, dist_base);
+				bool exist = false;
+				for (hlt::Position p : *destinations) {
+					if (p==hlt::Position(j, i)) {
+						exist = true;
+					}
+				}
+				//if the current case is more interesting and no other ship is going to it yet
+				if (tmp_interest > destInterest && !exist) {
 
-		//NEXT RANDOM BIS
-		/*
-		hlt::Position l_pos = m_game->me->ships[m_id]->position;
-		l_destination = hlt::Position{l_pos.x + (rand() % 3) - 1, l_pos.y + (rand() % 3) - 1};
-		//*/
+					//hlt::log::log("i : "+ std::to_string(i) + ", j: " + std::to_string(j) + ", at: " + std::to_string(interest.at(i).at(j)));
+					//hlt::log::log("dist : " + std::to_string(dist) + ", pow: " + std::to_string(std::powf(0.8f, dist)) + ", result: " + std::to_string(tmpInterest));
+					destX = j;
+					destY = i;
+					destInterest = tmp_interest;
+				}
 
-		//Next RANDOM
-		/*
-		auto dir = hlt::Direction(rand() % 4);
+			}
+		}
+		l_destination = hlt::Position(destX, destY);
+		(*destinations).push_back(l_destination);
+		return l_destination;
+		
+	}
 
-		l_destination = p_position.directional_offset(dir);
-		//*/
-
-		//Next with more halite
-		//*
+	hlt::Direction MyShip::MyShip::MoveAny() {
 		auto l_map = m_game->game_map.get();
+		auto l_ship = m_game->me->ships[m_id];
+		auto l_pos = l_ship->position;
 
-		auto l_possibleDest = std::vector<hlt::MapCell*>();
+		auto l_possibleDest = std::vector<hlt::Direction>();
 		//Still
 		//l_possibleDest.push_back(l_map->at(p_position));
 		//North
-		auto l_cellNorth = l_map->at(p_position.directional_offset(hlt::Direction::NORTH));
+		auto l_cellNorth = l_map->at(l_pos.directional_offset(hlt::Direction::NORTH));
 		if (l_cellNorth->is_empty())
-			l_possibleDest.push_back(l_cellNorth);
+			l_possibleDest.push_back((hlt::Direction::NORTH));
 		//SOUTH
-		auto l_cellSouth = l_map->at(p_position.directional_offset(hlt::Direction::SOUTH));
+		auto l_cellSouth = l_map->at(l_pos.directional_offset(hlt::Direction::SOUTH));
 		if (l_cellSouth->is_empty())
-			l_possibleDest.push_back(l_cellSouth);
+			l_possibleDest.push_back(hlt::Direction::SOUTH);
 		//WEST
-		auto l_cellWest = l_map->at(p_position.directional_offset(hlt::Direction::WEST));
-		if (l_cellSouth->is_empty())
-			l_possibleDest.push_back(l_cellWest);
+		auto l_cellWest = l_map->at(l_pos.directional_offset(hlt::Direction::WEST));
+		if (l_cellWest->is_empty())
+			l_possibleDest.push_back(hlt::Direction::WEST);
 		//EAST
-		auto l_cellEast = l_map->at(p_position.directional_offset(hlt::Direction::SOUTH));
-		if (l_cellSouth->is_empty())
-			l_possibleDest.push_back(l_cellEast);
+		auto l_cellEast = l_map->at(l_pos.directional_offset(hlt::Direction::EAST));
+		if (l_cellEast->is_empty())
+			l_possibleDest.push_back(hlt::Direction::SOUTH);
 
-		auto l_destCell = l_map->at(l_destination);
-		auto l_destCost = l_destCell->halite;
-		for (auto l_cell : l_possibleDest)
-		{
-			auto l_tempCost = l_cell->halite;
-			if (l_tempCost > l_destCost)
-			{
-				l_destCell = l_cell;
-				l_destination = l_cell->position;
-				l_destCost = l_tempCost;
-			}
+		if (l_possibleDest.size() > 0) {
+			
+			return l_possibleDest.at((int)((std::rand()/(float)RAND_MAX)* ((float)l_possibleDest.size()-1)));
 		}
-		//*/
-
-		return l_destination;
+		else {
+			return hlt::Direction::STILL;
+		}
 	}
 
 	hlt::Position MyShip::GoBase(hlt::Position p_position)
